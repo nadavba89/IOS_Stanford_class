@@ -11,7 +11,7 @@ import UIKit
 class ViewController: UIViewController {
 
     
-    lazy var game = Concentration(numberOfPairOfCards: (cardButtons.count + 1 / 2))
+    lazy var game = Concentration(numberOfPairOfCards: ((cardButtons.count + 1) / 2))
     
     var flipCount = 0 { // every property can have code as so...
         didSet { // this is called a property observer, it observe everytime the property changes.

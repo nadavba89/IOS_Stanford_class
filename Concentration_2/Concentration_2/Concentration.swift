@@ -39,52 +39,33 @@ class Concentration{
     
     
     init(numberOfPairOfCards: Int) {
-        for _ in 1...numberOfPairOfCards {
+        for _ in 0..<numberOfPairOfCards {
             let card = Card()
             cards += [card,card]
         }
-//        var numOfPairsNeedsToShufle = 0;
-//        var shuffledCards = [Card?]()
-//        
-//        while numOfPairsNeedsToShufle != cards.count {
-//            let randomIndex = Int(arc4random_uniform(UInt32(cards.count)))
-//            if shuffledCards[randomIndex] == nil {
-//                shuffledCards[randomIndex] = cards[numOfPairsNeedsToShufle]
-//                numOfPairsNeedsToShufle += 1
-//            }
-//        }
-//        
-//        for shuffledCrad in shuffledCards{
-//            cards[numOfPairsNeedsToShufle] = shuffledCrad!
-//            numOfPairsNeedsToShufle -= 1
-//        }
+        cards = shuffleCards(cardsToShuffle: cards)
         
+    }
+    
+    func shuffleCards(cardsToShuffle: [Card]) -> [Card]{
+        var numOfPairsNeedsToShufle = 0
+        var shuffledCards = [Card]()
+        var isShuffled = [Bool]()
+        for index in 0..<cardsToShuffle.count{
+            isShuffled.insert(false, at: index)
+        }
+        while numOfPairsNeedsToShufle != cardsToShuffle.count {
+            let randomIndex = Int(arc4random_uniform(UInt32(cardsToShuffle.count)))
+            if !isShuffled[randomIndex]{
+                shuffledCards += [cardsToShuffle[randomIndex]]
+                isShuffled[randomIndex] = true
+                numOfPairsNeedsToShufle += 1
+            }
+        }
+        return shuffledCards
     }
     
 }
 
-//extension MutableCollection {
-//    /// Shuffles the contents of this collection.
-//    mutating func shuffle() {
-//        let c = count
-//        guard c > 1 else { return }
-//
-//        for (firstUnshuffled, unshuffledCount) in
-//            zip(indices, stride(from: c, to: 1, by: -1)) {
-//                // Change `Int` in the next line to `IndexDistance` in < Swift 4.1
-//                let d: Int = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
-//                let i = index(firstUnshuffled, offsetBy: d)
-//                swapAt(firstUnshuffled, i)
-//        }
-//    }
-//}
-//
-//extension Sequence {
-//    /// Returns an array with the contents of this sequence, shuffled.
-//    func shuffled() -> [Element] {
-//        var result = Array(self)
-//        result.shuffle()
-//        return result
-//    }
-//}
+
 

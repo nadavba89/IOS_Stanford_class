@@ -11,11 +11,31 @@ import Foundation
 class Concentration{
     
     
-    var cards = [Card]()
+    private(set) var cards = [Card]()
     
-    var indexOfOneAndOnlyFacedUpCard: Int?
+    private var indexOfOneAndOnlyFacedUpCard: Int?{
+        get{
+            var foundIndex: Int?
+            for index in cards.indices {
+                if cards[index].isFaceUp {
+                    if foundIndex == nil {
+                        foundIndex = index
+                    } else {
+                        return nil
+                    }
+                }
+            }
+            return foundIndex
+        }
+        set (newValue){
+            for index in cards.indices {
+                cards[index].isFaceUp = (index == newValue)
+            }
+        }
+    }
     
     func chooseCard(at index: Int){
+        assert(cards.indices.contains(index),"Concentration.chooseCard(at: \(index)): chosen index not in the cards")
         if !cards[index].isMatched{
             if let matchIndex = indexOfOneAndOnlyFacedUpCard, matchIndex != index {
                 //check if cards match
@@ -24,13 +44,8 @@ class Concentration{
                     cards[index].isMatched = true
                 }
                 cards[index].isFaceUp = true
-                indexOfOneAndOnlyFacedUpCard = nil
             } else {
                 //either no cards or 2 cards are faced up
-                for flipDownIndex in cards.indices {
-                    cards[flipDownIndex].isFaceUp = false
-                }
-                cards[index].isFaceUp = true
                 indexOfOneAndOnlyFacedUpCard = index
             }
         }
@@ -39,6 +54,7 @@ class Concentration{
     
     
     init(numberOfPairOfCards: Int) {
+        assert(numberOfPairOfCards > 0,"Concentration.init( \(numberOfPairOfCards)): you must have at least one pair of cards")
         for _ in 0..<numberOfPairOfCards {
             let card = Card()
             cards += [card,card]
@@ -47,7 +63,7 @@ class Concentration{
         
     }
     
-    func shuffleCards(cardsToShuffle: [Card]) -> [Card]{
+    private func shuffleCards(cardsToShuffle: [Card]) -> [Card]{
         var numOfPairsNeedsToShufle = 0
         var shuffledCards = [Card]()
         var isShuffled = [Bool]()
@@ -55,7 +71,7 @@ class Concentration{
             isShuffled.insert(false, at: index)
         }
         while numOfPairsNeedsToShufle != cardsToShuffle.count {
-            let randomIndex = Int(arc4random_uniform(UInt32(cardsToShuffle.count)))
+            let randomIndex = cardsToShuffle.count.arc4random
             if !isShuffled[randomIndex]{
                 shuffledCards += [cardsToShuffle[randomIndex]]
                 isShuffled[randomIndex] = true

@@ -8,10 +8,14 @@
 
 import Foundation
 
-class Concentration{
+struct Concentration{
     
     
     private(set) var cards = [Card]()
+    private(set) var flipCount = 0
+    private(set) var scoreCount = 0
+    let positiveScoreValue = 2
+    let negativeScoreValue = -1
     
     private var indexOfOneAndOnlyFacedUpCard: Int?{
         get{
@@ -34,18 +38,29 @@ class Concentration{
         }
     }
     
-    func chooseCard(at index: Int){
+    mutating func chooseCard(at index: Int){
         assert(cards.indices.contains(index),"Concentration.chooseCard(at: \(index)): chosen index not in the cards")
         if !cards[index].isMatched{
             if let matchIndex = indexOfOneAndOnlyFacedUpCard, matchIndex != index {
+                flipCount+=1
                 //check if cards match
                 if cards[matchIndex].identifier == cards[index].identifier {
                     cards[matchIndex].isMatched = true
                     cards[index].isMatched = true
+                    scoreCount += positiveScoreValue
+                }else {//there's a mismatch
+                    scoreCount += cards[index].wasMismatched ? negativeScoreValue : 0
+                    scoreCount += cards[matchIndex].wasMismatched ? negativeScoreValue : 0
+                    cards[index].wasMismatched = true
+                    cards[matchIndex].wasMismatched = true
                 }
                 cards[index].isFaceUp = true
+                
             } else {
                 //either no cards or 2 cards are faced up
+                if indexOfOneAndOnlyFacedUpCard == nil {
+                    flipCount+=1
+                }
                 indexOfOneAndOnlyFacedUpCard = index
             }
         }
@@ -80,6 +95,19 @@ class Concentration{
         }
         return shuffledCards
     }
+    
+    
+    mutating func newGame(){
+        for index in cards.indices{
+            cards[index].isFaceUp = false
+            cards[index].isMatched = false
+            cards[index].wasMismatched = false
+        }
+        cards = shuffleCards(cardsToShuffle: cards)
+        flipCount = 0
+        scoreCount = 0
+    }
+    
     
 }
 

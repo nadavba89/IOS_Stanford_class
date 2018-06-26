@@ -19,20 +19,19 @@ class ViewController: UIViewController {
         }
     }
     
-    private(set) var flipCount = 0 { // every property can have code as so...
-        didSet { // this is called a property observer, it observe everytime the property changes.
-            flipCountLabel.text = "Flips: \(flipCount)"
-        }
+    @IBOutlet private weak var flipCountLabel: UILabel!
+    
+    @IBOutlet weak var scoreCountLabel: UILabel!
+    
+    @IBAction func newGame(_ sender: UIButton) {
+        game.newGame()
+        updateViewFromModel()
     }
     
-    @IBOutlet private weak var flipCountLabel: UILabel!
     
     @IBOutlet private var cardButtons: [UIButton]!
     
-    @IBAction private func touchCard(_ sender: UIButton) {//if we want to return a
-        //value we should add after
-        //@IBAction func touchCard(_ sender: UIButton) -> Int, as so.
-        flipCount += 1
+    @IBAction private func touchCard(_ sender: UIButton) {
         if let cardNumber = cardButtons.index(of: sender) {
             game.chooseCard(at: cardNumber)
             //now we need to update the view that a card had been chosen
@@ -55,15 +54,29 @@ class ViewController: UIViewController {
                 button.backgroundColor = card.isMatched ?  #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 0) : #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 1)
             }
         }
+        flipCountLabel.text = "Flips: \(game.flipCount)"
+        scoreCountLabel.text = "Score: \(game.scoreCount)"
+        
     }
     
-    private var emojiChoices = ["👻","🎃","😈","🍬","🍎","🦇","🙀","🍭","😱"]
+    private var emojiThemes = [
+        ["👻","🎃","😈","🍬","🍎","🦇","🙀","🍭","😱"],
+        ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨"],
+        ["🐔","🐧","🐦","🐤","🐣","🐥","🦆","🦅","🦉"],
+        ["⚽️","🏀","🏈","⚾️","🎾","🏐","🏉","🎱","🏓"],
+        ["🚗","🚕","🚙","🚌","🚎","🏎","🚓","🚑","🚒"],
+        ["🇨🇦","🇧🇷","🇮🇱","🇮🇹","🇮🇳","🇲🇽","🇦🇺","🇬🇧","🇦🇷"]]
+    
+    var chosenTheme : Int?
     
     private var emoji = [Int:String]()
     
     private func emoji(for card: Card) -> String {
-        if emoji[card.identifier] == nil ,emojiChoices.count > 0 {
-            emoji[card.identifier] = emojiChoices.remove(at: emojiChoices.count.arc4random)
+        if chosenTheme == nil{
+          chosenTheme  = emojiThemes.count.arc4random
+        }
+        if emoji[card.identifier] == nil ,emojiThemes[chosenTheme!].count > 0 {
+            emoji[card.identifier] = emojiThemes[chosenTheme!].remove(at: emojiThemes[chosenTheme!].count.arc4random)
         }
         return emoji[card.identifier] ?? "?"
     }
